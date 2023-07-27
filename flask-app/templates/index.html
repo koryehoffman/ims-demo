@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}
+Product Search
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-5">Product Search</h1>
+
+    <form id="search-form" class="form-inline justify-content-center mb-5">
+        <input id="search-input" type="text" class="form-control mr-sm-2" placeholder="Search products...">
+        <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <ul id="results" class="list-group"></ul>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/search.js"></script>
+<link rel="stylesheet" href="/static/styles.css">
+{% endblock %}

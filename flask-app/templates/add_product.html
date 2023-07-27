@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}
+Add Product
+{% endblock %}
+
+{% block content %}
+    <h1 class="text-center mb-5">Add Product</h1>
+
+    <form id="add-product-form" class="mb-5">
+        <div class="form-group">
+            <label for="product-name">Product Name</label>
+            <input id="product-name" type="text" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="product-category">Product Category</label>
+            <input id="product-category" type="text" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="price">Price</label>
+            <input id="price" type="number" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="available-quantity">Available Quantity</label>
+            <input id="available-quantity" type="number" class="form-control" required>
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" class="form-control" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add Product</button>
+    </form>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/add_product.js"></script>
+{% endblock %}

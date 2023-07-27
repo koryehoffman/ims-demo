@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb-app
+  template:
+    metadata:
+      labels:
+        app: mongodb-app
+    spec:
+      containers:
+      - name: mongodb-app
+        image: mongo:7.0.0-rc8
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-data
+          mountPath: /data/db
+      volumes:
+      - name: mongo-data
+        persistentVolumeClaim:
+          claimName: mongo-data
