@@ -1,68 +1,57 @@
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import os
+import json
+from json_encoder import JSONEncoder
 
 class MongoDBManager:
-    def __init__(self):
+    def __init__(self, db_name, collection_name):
         # Get MongoDB URI from environment variables
         MONGO_URI = os.getenv('MONGO_URI')
+
         # Initialize a MongoDB client
         client = MongoClient(MONGO_URI)
-        # Get a reference to the products database
-        self.db = client.products_db
-        # Get a reference to the products collection within the database
-        self.collection = self.db.products
+        self.db = client[db_name] # Get a reference to the sepcified database
+        self.collection = self.db[collection_name] # Get a reference to the specified collection within the database
 
     def find_all(self):
-        # Fetch all products from the collection
-        products = self.collection.find()
-        return [
-            {
-                'product_id': str(p['_id']), # Convert ObjectId to string for JSON serialization
-                'product_name': p['product_name'],
-                'product_category': p['product_category'],
-                'price': p['price'],
-                'available_quantity': p['available_quantity'],
-                'description': p['description']
-            }
-            for p in products
-        ]
-
-    def find_one(self, product_id):
-        # Find a single product by its ID
-        product = self.collection.find_one({'_id': ObjectId(product_id)})
-        # Return the product data if found, otherwise return None
-        if product:
-            return {
-                'product_id': str(product['_id']), # Convert ObjectId to string for JSON serialization
-                'product_name': product['product_name'], 
-                'product_category': product['product_category'], 
-                'price': product['price'], 
-                'available_quantity': product['available_quantity'],
-                'description': product['description']
-                }
+        docs = list(self.collection.find()) # Fetch all documents from the collection
+        json_docs = JSONEncoder().encode(docs) # Serialize the documents to JSON using the custom JSON Encoder
+        result = json.loads(json_docs) # Parse the JSON string back to a Python list of dictionaries
+        return result
+    
+    def find_one(self, id):
+        # Find a single document by its ID
+        doc = self.collection.find_one({'_id': ObjectId(id)})
+        if doc:
+            # Serialize the document to JSON
+            json_doc = JSONEncoder().encode(doc) # Serialize the document to JSON using the custom JSON Encoder
+            result = json.loads(json_doc) # Parse the JSON string back to a Python dictionary
+            return result
         return None
 
-    def create(self, product_data):
-        # Insert a new product into the collection and get its ID
-        product_id = self.collection.insert_one(product_data).inserted_id
-        # Fetch the newly created product data from the database and return it
-        return self.find_one(str(product_id)) # Convert ObjectId to string for JSON serialization
+    def create(self, data):
+        # Insert a new document into the collection and get its ID
+        id = self.collection.insert_one(data).inserted_id
+        # Fetch the newly created document from the database and return it
+        result = self.find_one(id)
+        return result
 
-    def update(self, product_id, product_data):
-        # Update a specific product in the collection
-        self.collection.update_one({'_id': ObjectId(product_id)}, {'$set': product_data})
-        # Fetch the updated product data from the database and return it
-        return self.find_one(str(product_id)) # Convert ObjectId to string for JSON serialization
+    def update(self, id, data):
+        # Update a specific document in the collection
+        self.collection.update_one({'_id': ObjectId(id)}, {'$set': data})
+        # Fetch the updated document from the database and return it
+        result = self.find_one(id)
+        return result
 
-    def delete(self, product_id):
-        # Delete a specific product from the collection
-        result = self.collection.delete_one({'_id': ObjectId(product_id)})
-        # Return True if a product was deleted, False otherwise
+    def delete(self, id):
+        # Delete a specific document from the collection
+        result = self.collection.delete_one({'_id': ObjectId(id)})
+        # Return True if a document was deleted, False otherwise
         return result.deleted_count > 0
 
-    def analytics(self):
-        # Define a pipeline for aggregation
+    def product_analytics(self):
+        # Define the pipeline for aggregation
         pipeline = [
             {"$group": {
                 "_id": "$product_category",

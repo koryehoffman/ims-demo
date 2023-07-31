@@ -3,8 +3,8 @@ from ElasticsearchManager import ElasticsearchManager
 
 class ProductRepository:
     # Initialize managers for MongoDB and Elasticsearch
-    mongo_manager = MongoDBManager()
-    es_manager = ElasticsearchManager()
+    mongo_manager = MongoDBManager('products_db', 'products')
+    es_manager = ElasticsearchManager('product_descriptions')
 
     # Function to retrieve all products from the MongoDB
     def find_all(self):
@@ -22,11 +22,10 @@ class ProductRepository:
         try:
             # Create product in MongoDB
             result = self.mongo_manager.create(product.product_data)
-            product_id = result['product_id']
-            # Remove the _id field as it's an ObjectId and not JSON serializable
-            product.product_data.pop('_id')  
+            product_id = result['_id']
+
             # Index the product data in Elasticsearch
-            self.es_manager.index_document(product_id, product.product_data)
+            self.es_manager.index_document(product_id, result)
             return result
         except Exception as e:
             # If there was a problem, delete the product from MongoDB and re-raise the exception
@@ -43,7 +42,7 @@ class ProductRepository:
             # Update the product data in MongoDB
             result = self.mongo_manager.update(product_id, product.product_data)
             # Index the updated product data in Elasticsearch
-            self.es_manager.index_document(product_id, product.product_data)
+            self.es_manager.index_document(product_id, result)
             return result
         except Exception as e:
             # If there was a problem, revert to the original product data in MongoDB and re-raise the exception
@@ -74,6 +73,6 @@ class ProductRepository:
         return results
 
     # Function to get analytics about the products from MongoDB
-    def analytics(self):
-        results = self.mongo_manager.analytics()
+    def product_analytics(self):
+        results = self.mongo_manager.product_analytics()
         return results

@@ -31,7 +31,7 @@ def get_product(product_id):
     try:
         product = product_repo.find_one(product_id)
         if product:
-            return jsonify({'result': product}), 200
+            return jsonify(product), 200
     except InvalidId: # bson.errors.InvalidId is raised when the product_id is not a valid ObjectId
         return jsonify({'error': 'Invalid product ID'}), 400
     return jsonify({'error': 'Product not found'}), 404 
@@ -44,7 +44,7 @@ def add_product():
         product_data = product_schema.load(request.get_json()) 
         new_product = product_repo.create(Product(product_data)) 
         if new_product: 
-            return jsonify({'result': new_product}), 201
+            return jsonify(new_product), 201
     except ValidationError as err: # marshmallow.exceptions.ValidationError is raised when the input data is invalid
         return jsonify(err.messages), 400
     except ValueError as ve: # ValueError is raised when the product creation fails
@@ -59,7 +59,7 @@ def update_product(product_id):
         product_data = product_schema.load(request.get_json())
         updated_product = product_repo.update(product_id, Product(product_data))
         if updated_product:
-            return jsonify({'result': updated_product}), 200
+            return jsonify(updated_product), 200
     except InvalidId: # bson.errors.InvalidId is raised when the product_id is not a valid ObjectId
         return jsonify({'error': 'Invalid product ID'}), 400
     except ValidationError as err: # marshmallow.exceptions.ValidationError is raised when the input data is invalid
@@ -91,7 +91,7 @@ def search_products():
 @app.route('/products/analytics', methods=['GET'])
 def get_product_analytics():
     try:
-        analytics = product_repo.analytics()
+        analytics = product_repo.product_analytics()
         return jsonify(analytics), 200
     except ValueError as ve: # ValueError is raised when the product analytics fails
         return jsonify({'error': str(ve)}), 404
