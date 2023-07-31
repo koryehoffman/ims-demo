@@ -25,6 +25,7 @@ Use Git to clone the repository:
 
 ```bash
 git clone https://github.com/koryehoffman/ims-demo.git
+```
 
 ## Deployment Steps
 
