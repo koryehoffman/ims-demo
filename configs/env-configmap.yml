@@ -4,7 +4,9 @@ metadata:
   name: env-configmap
 data:
   FLASK_DEBUG: "true"
+  APOLLO_PORT: "5001"
   MONGO_URI: "mongodb://mongodb-service:27017/products_db"
+  FLASK_URI: "http://flask-service:5000"
   ES_HOST: "http://elasticsearch-service:9200"
   ES_USER: "elastic"
   ES_PASSWORD: "changeme"

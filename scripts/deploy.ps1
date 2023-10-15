@@ -4,6 +4,9 @@ minikube -p minikube docker-env | Invoke-Expression
 # Build Docker image for the Flask app
 docker build -t flask-app:0.0.1 ..\flask-app\
 
+# Build Docker image for the Apollo Server
+docker build -t apollo-app:0.0.1 ..\apollo-app\
+
 # Apply the Kubernetes configurations
 kubectl apply -f ../configs/env-configmap.yml
 
@@ -18,6 +21,9 @@ kubectl apply -f ../mongodb-app/mongodb-deployment.yml
 kubectl apply -f ../mongodb-app/mongodb-pvc.yml
 kubectl apply -f ../mongodb-app/mongodb-service.yml
 
+kubectl apply -f ../apollo-app/apollo-deployment.yml
+kubectl apply -f ../apollo-app/apollo-service.yml
+
 # Wait until the flask-app pod is ready
 $flask_app_label = "app=flask-app"
 do {
@@ -27,6 +33,18 @@ do {
         break
     } else {
         Write-Output "Waiting for Flask App to be ready..."
+        Start-Sleep -Seconds 1
+    }
+} while ($true)
+
+$apollo_server_label = "app=apollo-app"
+do {
+    $status = kubectl get pods -l $apollo_server_label -o jsonpath="{.items[0].status.phase}"
+    if($status -eq "Running") {
+        Write-Output "Apollo Server is ready."
+        break
+    } else {
+        Write-Output "Waiting for Apollo Server to be ready..."
         Start-Sleep -Seconds 1
     }
 } while ($true)

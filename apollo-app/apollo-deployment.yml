@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apollo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apollo-app
+  template:
+    metadata:
+      labels:
+        app: apollo-app
+    spec:
+      containers:
+      - name: apollo-app
+        image: apollo-app:0.0.1
+        ports:
+        - containerPort: 5001
+        envFrom:
+        - configMapRef:
+            name: env-configmap
