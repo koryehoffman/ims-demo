@@ -1,6 +1,6 @@
 # Inventory Management System - IMS-DEMO
 
-This is a demo inventory management system built with Flask. The application uses MongoDB for data storage, Elasticsearch for full-text search, and it's containerized with Docker and can be deployed on Minikube.
+This is a demo inventory management system built with Flask. The application uses MongoDB for data storage, Elasticsearch for full-text search, and it's containerized with Docker and can be deployed on Minikube. There is a REST API, GraphQL API, and partial UI. This project is intended to showcase various different technologies and is not necessarily an optimal ecosystem.
 
 ## Objective
 
@@ -18,6 +18,7 @@ This setup has been tested on a Windows environment. Before you start, make sure
 - Minikube
 - kubectl
 - Python 3.6+
+- Node.js 14.16.0+
 
 ## Pull the Repository
 
@@ -61,11 +62,12 @@ Follow these steps to deploy the application:
 3. Test the API endpoints
 
     For simplicity, I have also included a Postman collection which you can import.
-    Note: To run the elasticsearch commands from your local machine, you must also run the command below from a terminal.
-    Additionally included is the command for mongodb should you wish to connect it to it from your localhost.
+    Note: To run the elasticsearch commands from your local machine, you must also run the first command below from a terminal.
+    Additionally included are the commands for mongodb and the GraphQL API should you wish to connect to them from your localhost.
     ````
     kubectl port-forward service/elasticsearch-service 9200:9200
     kubectl port-forward service/mongodb-service 27017:27017
+    kubectl port-forward service/apollo-service 5001:5001
     ````
 
 ## API Endpoints
@@ -80,10 +82,13 @@ The REST API includes the following endpoints:
 - `GET /products/search?query={keywords}`: Fetch products whose descriptions match the specified keywords
 - `GET /products/analytics`: Fetch aggregated product data, such as the total count of products, the most popular product category, and the average price of products
 
+The GraphQL API is an extension of the REST API. The GraphQL API makes use of all of the REST endpoints and supports both queries and mutations.
+
 ## Project Structure
 
 - `flask-app`: Contains the main Flask application and its Dockerfile along with its K8 config files.
 - `elasticsearch-app` and `mongodb-app`: Contains the K8 configurations for Elasticsearch and MongoDB.
+- `apollo-app`: Contains the K8 config files as well as the NodeJS implementation of GraphQL.
 - `configs`: Contains the environment configuration for the application.
 - `scripts`: Contains the deployment script and a Python script for generating test data.
 
